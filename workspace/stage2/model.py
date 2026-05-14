@@ -20,9 +20,11 @@ def create_stunet_model(
       the final segmentation layer for the target class count.
     """
     import os
-    DEFAULT_CKPT_DIR.mkdir(parents=True, exist_ok=True)
     # MedIM reads MEDIM_CKPT_DIR when its registry module is imported, so set it before importing medim.
-    os.environ["MEDIM_CKPT_DIR"] = str(DEFAULT_CKPT_DIR.resolve())
+    # Respect an externally configured cache path (upload/external/stunet_inference.py sets it to models/medim_ckpt).
+    if "MEDIM_CKPT_DIR" not in os.environ:
+        DEFAULT_CKPT_DIR.mkdir(parents=True, exist_ok=True)
+        os.environ["MEDIM_CKPT_DIR"] = str(DEFAULT_CKPT_DIR.resolve())
     import medim
 
     model = medim.create_model(variant, dataset=pretrained_dataset)
