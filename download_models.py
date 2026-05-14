@@ -14,6 +14,7 @@ Models:
 
 import os
 import sys
+import shutil
 from pathlib import Path
 
 MODELS_DIR = Path("./models")
@@ -59,6 +60,47 @@ def download_hub(repo_id: str, local_dir: str, name: str):
         print(f"  [WARN] {name} download failed: {e}")
         print(f"  Please manually download from: https://huggingface.co/{repo_id}")
         print(f"  Place files in: {MODELS_DIR / local_dir}")
+
+
+def ensure_stage0_router_layout():
+    """Normalize Stage0 router checkpoint to the path expected by config.yaml."""
+    root = MODELS_DIR / "stage0_router"
+    expected = root / "artifacts" / "models" / "router_head_best.pt"
+    if expected.exists():
+        print(f"  [OK] Stage0 Router checkpoint found: {expected}")
+        return
+
+    candidates = list(root.rglob("router_head_best.pt"))
+    if not candidates:
+        candidates = sorted(root.rglob("*.pt"))
+
+    if candidates:
+        expected.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(candidates[0], expected)
+        print(f"  [OK] Copied Stage0 Router checkpoint to: {expected}")
+        return
+
+    raise FileNotFoundError(
+        "Stage0 Router checkpoint not found after download. "
+        f"Expected {expected}. Please check HuggingFace repo clover259/stage0-router-ct."
+    )
+
+
+def verify_required_files():
+    """Fail early if required weights are missing."""
+    required = [
+        MODELS_DIR / "Qwen3-Embedding-4B",
+        MODELS_DIR / "voxtell_v1.1",
+        MODELS_DIR / "stage0_router" / "artifacts" / "models" / "router_head_best.pt",
+        MODELS_DIR / "stunet" / "best.pt",
+        MODELS_DIR / "lung_nodule_ct_detection",
+    ]
+    missing = [p for p in required if not p.exists()]
+    if missing:
+        print("\n[ERROR] Missing required model files/directories:")
+        for p in missing:
+            print(f"  - {p}")
+        sys.exit(1)
 
 
 def download_monai_nodule():
@@ -110,9 +152,12 @@ def main():
         "stage0_router",
         "Stage0 Router (9 MB)"
     )
+    ensure_stage0_router_layout()
 
     # 6. MONAI Nodule Detector
     download_monai_nodule()
+
+    verify_required_files()
 
     print("\n" + "=" * 60)
     print("Done! Check ./models/ for downloaded weights.")
