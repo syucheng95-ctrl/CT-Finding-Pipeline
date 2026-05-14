@@ -1,3 +1,6 @@
-from importlib.metadata import version as _version
+from importlib.metadata import PackageNotFoundError, version as _version
 
-__version__ = _version("voxtell")
+try:
+    __version__ = _version("voxtell")
+except PackageNotFoundError:
+    __version__ = "0.0.0"
