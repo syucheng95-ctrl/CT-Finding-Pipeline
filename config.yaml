@@ -21,7 +21,7 @@ models:
   voxtell: "./models/voxtell_v1.1"
   stage0_router: "./models/stage0_router/artifacts/models/router_head_best.pt"
   stunet: "./models/stunet/best.pt"
-  medim_ckpt: "./models/medim_ckpt"
+  medim_ckpt: "./models/stunet/medim_ckpt"
   nodule_detector: "./models/lung_nodule_ct_detection"
 
 # --- Stage0 参数（一般不改） ---
