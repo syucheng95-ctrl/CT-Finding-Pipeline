@@ -106,7 +106,7 @@ def main() -> None:
             if args.limit_cases:
                 cmd += ["--limit-cases", str(args.limit_cases)]
         elif stage == "2_eval":
-            pass
+            cmd += ["--manifest", manifest]
         elif stage == "gate_fit":
             cmd += ["--fit-final"]
         elif stage in GATE_STAGES:

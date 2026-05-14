@@ -80,6 +80,7 @@ def window_starts(length: int, patch: int, stride: int):
 def main():
     parser = argparse.ArgumentParser(description="Stage2 finding-level eval with paste-back")
     parser.add_argument("--config", default="config.yaml")
+    parser.add_argument("--manifest", default="", help="Manifest JSONL (default: config manifests.default)")
     parser.add_argument("--categories", default="", help="Comma-separated; empty = all")
     parser.add_argument("--device", default="cuda")
     parser.add_argument("--overlap", type=float, default=0.5, help="Sliding-window overlap")
@@ -105,7 +106,8 @@ def main():
         print("  Re-run: python run_stage2_make_rois.py --config config.yaml")
         sys.exit(1)
 
-    manifest = {r["id"]: r for r in load_jsonl(resolve(config, "manifests.default"))}
+    manifest_path = args.manifest or resolve(config, "manifests.default")
+    manifest = {r["id"]: r for r in load_jsonl(manifest_path)}
     label_root = Path(resolve(config, "data.labels"))
 
     # ── Load verified proposals for S1 coarse masks (used by gate) ──
@@ -119,8 +121,12 @@ def main():
         fid = r.get("parent_sample_id") or r.get("finding_id")
         finding_rois[fid].append(r)
 
-    # Iterate ALL default findings (including those with 0 ROIs) for proper no-ROI fallback
-    finding_ids = sorted(set(manifest.keys()))
+    # Iterate findings produced by the current upstream run. This keeps smoke tests
+    # with --limit-cases from scanning the full training manifest, while still
+    # preserving no-ROI fallback for Stage1 findings that produced no Stage2 ROI.
+    finding_ids = sorted(set(fid_to_stage1.keys()) | set(finding_rois.keys()))
+    if not finding_ids:
+        finding_ids = sorted(set(manifest.keys()))
     # When --categories is set, only evaluate findings of those categories (others excluded, not fallback)
     if wanted:
         finding_ids = [fid for fid in finding_ids
