@@ -4,7 +4,7 @@ Usage:
   python download_models.py
 
 Models:
-  1. Qwen3-Embedding-4B (7.7 GB) → ModelScope 自动下载
+  1. Qwen3-Embedding-4B (7.7 GB) → HuggingFace Hub
   2. TotalSegmentator (~300 MB) → 首次 import 自动下载
   3. VoxTell (1.7 GB) → HuggingFace Hub
   4. STU-Net (167 MB) → HuggingFace Hub
@@ -21,18 +21,20 @@ MODELS_DIR.mkdir(parents=True, exist_ok=True)
 
 
 def download_qwen():
-    """Qwen3-Embedding-4B from ModelScope."""
+    """Qwen3-Embedding-4B from HuggingFace Hub."""
     print("\n[1/5] Downloading Qwen3-Embedding-4B (7.7 GB)...")
     try:
-        from modelscope import snapshot_download
+        from huggingface_hub import snapshot_download
         snapshot_download(
             "Qwen/Qwen3-Embedding-4B",
-            cache_dir=str(MODELS_DIR / "Qwen3-Embedding-4B"),
+            local_dir=str(MODELS_DIR / "Qwen3-Embedding-4B"),
+            local_dir_use_symlinks=False,
         )
         print("  [OK] Qwen3-Embedding-4B downloaded")
     except Exception as e:
         print(f"  [WARN] Qwen download failed: {e}")
-        print("  You can manually download from: https://modelscope.cn/models/Qwen/Qwen3-Embedding-4B")
+        print("  You can manually download from: https://huggingface.co/Qwen/Qwen3-Embedding-4B")
+        print(f"  Place files in: {MODELS_DIR / 'Qwen3-Embedding-4B'}")
 
 
 def download_totalseg():
@@ -82,7 +84,7 @@ def main():
     print("Total size: ~10 GB")
     print("=" * 60)
 
-    # 1. Qwen3-Embedding-4B (7.7 GB, public via ModelScope)
+    # 1. Qwen3-Embedding-4B (7.7 GB, public via HuggingFace Hub)
     download_qwen()
 
     # 2. TotalSegmentator (auto-download, ~300 MB)
