@@ -23,8 +23,8 @@
     "min_samples_leaf": 5,
     "class_weight": "balanced"
   },
-  "model_path": "gate/outputs/gate_model.joblib",
-  "metadata_path": "gate/outputs/gate_metadata.json",
+  "model_path": "gate/pretrained/gate_model.joblib",
+  "metadata_path": "gate/pretrained/gate_metadata.json",
   "fallback": "S1",
   "table_path": "gate/outputs/gate_training_table.csv",
   "decisions_out": "outputs/final/gate_decisions.csv",
