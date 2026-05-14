@@ -132,7 +132,7 @@ def main() -> None:
 
             cleanup_map = {
                 "1": [outputs_root / "stage0"],            # Stage1 has consumed crop NIfTI
-                "2_roi": [outputs_root / "stage1" / "masks"],  # coarse masks not needed after ROI gen
+                "2_eval": [outputs_root / "stage1" / "masks"],  # coarse masks are needed by Stage2 eval
                 "gate_table": [
                     outputs_root / "stage0",               # final cleanup
                     outputs_root / "stage0_5",
