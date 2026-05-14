@@ -1,0 +1,58 @@
+# ============================================================
+# 集中配置文件（只需改数据路径，其余一般不用改）
+# ============================================================
+
+# --- Python 环境 ---
+python: "C:/Users/Sunyucheng/anaconda3/envs/pytorch/python.exe"
+
+# --- 数据（放在 upload/data/ 下面） ---
+data:
+  ct_images: "./data/images"      # CT NIfTI 放这里
+  labels: "./data/labels"         # GT 标注 NIfTI 放这里
+
+# --- 清单文件 ---
+manifests:
+  train: "./data/all_100.jsonl"
+  default: "./data/all_100.jsonl"
+
+# --- 模型路径（download_models.py 自动下载到这里） ---
+models:
+  qwen_embedding: "./models/Qwen3-Embedding-4B"
+  voxtell: "./models/voxtell_v1.1"
+  stage0_router: "./models/stage0_router/artifacts/models/router_head_best.pt"
+  stunet: "./models/stunet/best.pt"
+  medim_ckpt: "./models/medim_ckpt"
+  nodule_detector: "./models/lung_nodule_ct_detection"
+
+# --- Stage0 参数（一般不改） ---
+stage0:
+  crop_mode: "policy_group"
+  spatial_mode: "anatomy"
+  mapping_mode: "fixed"
+  totalseg_device: "gpu"
+  totalseg_fast: true
+  conservative_margin: "60,60,50"
+  moderate_margin: "40,40,30"
+  aggressive_margin: "20,20,20"
+
+# --- Stage2 参数 ---
+stage2:
+  eval_overlap: 0.5
+
+# --- 输出目录 ---
+outputs:
+  root: "./outputs"
+  stage0: "./outputs/stage0"
+  stage0_5: "./outputs/stage0_5"
+  stage1: "./outputs/stage1"
+  stage2: "./outputs/stage2"
+  final: "./outputs/final"
+
+# --- 外部 Workspace 路径（指向解压后的 workspace 目录） ---
+# 如果已通过 PYTHONPATH / pip install 安装，这些可以为空
+workspaces:
+  stage0: ""       # e.g. "../stage0_workspace"
+  stage0_5: ""     # e.g. "../stage0.5_workspace"
+  stage1: ""       # e.g. "../stage1_verification"
+  stage2: ""       # e.g. "../stage2_workspace"
+  demo: ""         # e.g. "../生医工大赛-demo"

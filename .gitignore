@@ -1,0 +1,26 @@
+# Model weights (downloaded via download_models.py)
+models/
+data/medim_ckpt/
+
+# Pipeline outputs (generated at runtime)
+outputs/
+
+# Gate outputs (generated at runtime)
+gate/outputs/
+
+# Stage2.5 outputs (generated at runtime)
+stage2_5/outputs/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Temp files
+*.tmp
+*.temp
+~*
+
+# IDE
+.vscode/
+.idea/

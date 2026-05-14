@@ -1,0 +1,37 @@
+from pathlib import Path
+from typing import Literal
+
+
+DEFAULT_CKPT_DIR = Path("data/medim_ckpt")
+
+
+def create_stunet_model(
+    variant: Literal["STU-Net-S", "STU-Net-B"] = "STU-Net-S",
+    pretrained_dataset: str = "TotalSegmentator",
+    in_channels: int = 1,
+    out_channels: int = 2,
+):
+    """
+    Create a MedIM STU-Net model and adapt the segmentation head to downstream binary segmentation.
+
+    Notes:
+    - Pretrained weights are loaded through MedIM.
+    - The pretrained segmentation head is task-specific, so downstream training should replace or finetune
+      the final segmentation layer for the target class count.
+    """
+    import os
+    DEFAULT_CKPT_DIR.mkdir(parents=True, exist_ok=True)
+    # MedIM reads MEDIM_CKPT_DIR when its registry module is imported, so set it before importing medim.
+    os.environ["MEDIM_CKPT_DIR"] = str(DEFAULT_CKPT_DIR.resolve())
+    import medim
+
+    model = medim.create_model(variant, dataset=pretrained_dataset)
+
+    # Keep the pretrained encoder/decoder weights but reset the segmentation head for downstream classes.
+    if hasattr(model, "seg_outputs") and len(model.seg_outputs) > 0:
+        head = model.seg_outputs[-1]
+        head_in_channels = head.in_channels
+        import torch.nn as nn
+
+        model.seg_outputs[-1] = nn.Conv3d(head_in_channels, out_channels, kernel_size=1, stride=1, padding=0)
+    return model

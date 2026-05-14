@@ -1,0 +1,32 @@
+{
+  "feature_policy": "old_best_no_conf",
+  "threshold": 0.65,
+  "drop_prefixes": [
+    "feature__roi_",
+    "feature__n_rois",
+    "feature__n_coarse_rois",
+    "feature__n_proposal_rois",
+    "feature__roi_coarse_fraction",
+    "feature__s1_s2_",
+    "feature__s2_overlap",
+    "feature__s1_covered",
+    "feature__s2_outside",
+    "feature__s1_outside",
+    "feature__s2_conf_",
+    "feature__s2_roi_conf_spread",
+    "feature__s2_n_low_conf_rois"
+  ],
+  "model_type": "RF_depth4",
+  "model_params": {
+    "n_estimators": 100,
+    "max_depth": 4,
+    "min_samples_leaf": 5,
+    "class_weight": "balanced"
+  },
+  "model_path": "gate/outputs/gate_model.joblib",
+  "metadata_path": "gate/outputs/gate_metadata.json",
+  "fallback": "S1",
+  "table_path": "gate/outputs/gate_training_table.csv",
+  "decisions_out": "outputs/final/gate_decisions.csv",
+  "metrics_out": "outputs/final/final_metrics.json"
+}
