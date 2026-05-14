@@ -131,7 +131,7 @@ def main() -> None:
             import shutil
 
             cleanup_map = {
-                "0.5": [outputs_root / "stage0"],          # crop NIfTI no longer needed
+                "1": [outputs_root / "stage0"],            # Stage1 has consumed crop NIfTI
                 "2_roi": [outputs_root / "stage1" / "masks"],  # coarse masks not needed after ROI gen
                 "gate_table": [
                     outputs_root / "stage0",               # final cleanup
@@ -172,12 +172,12 @@ def main() -> None:
             summary_path = upload_dir / "outputs" / "final" / "final_metrics.json"
         elif name == "gate_training":
             if s == "gate_fit":
-                summary_path = upload_dir / "gate_training" / "outputs" / "gate_metadata.json"
+                summary_path = upload_dir / "gate" / "outputs" / "gate_metadata.json"
                 if summary_path.exists():
                     with open(summary_path, encoding="utf-8") as f:
                         summaries[f"stage_{s}"] = json.load(f)
                 continue
-            summary_path = upload_dir / "gate_training" / "outputs" / "gate_training_table.csv"
+            summary_path = upload_dir / "gate" / "outputs" / "gate_training_table.csv"
             if summary_path.exists():
                 summaries[f"stage_{s}"] = {"table_path": str(summary_path), "status": "ok"}
             continue
