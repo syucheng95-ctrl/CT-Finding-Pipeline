@@ -85,8 +85,14 @@ def load_router(checkpoint_path: Path, device):
     head, ckpt = load_head(checkpoint_path, device)
     cfg = ckpt["config"]
     qwen_cfg = cfg["qwen"]
-    model_path = resolve_path(qwen_cfg["model_path"])
+    model_path_override = os.environ.get("QWEN_MODEL_PATH")
+    model_path = Path(model_path_override) if model_path_override else resolve_path(qwen_cfg["model_path"])
     dtype = pick_dtype(qwen_cfg.get("dtype", "auto"), device)
+    if not model_path.exists():
+        raise FileNotFoundError(
+            f"Qwen model path not found: {model_path}. "
+            "Set config.yaml models.qwen_embedding or QWEN_MODEL_PATH."
+        )
     tokenizer = AutoTokenizer.from_pretrained(str(model_path), trust_remote_code=True)
     embedder = AutoModel.from_pretrained(
         str(model_path), trust_remote_code=True, torch_dtype=dtype

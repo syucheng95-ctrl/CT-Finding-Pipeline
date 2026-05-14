@@ -7,6 +7,7 @@ single crop_manifest.jsonl.
 
 import argparse
 import json
+import os
 import sys
 import tempfile
 import time
@@ -52,8 +53,11 @@ def main() -> None:
     from evaluate_stage0_policy_recall import LungCache
 
     checkpoint = resolve(config, "models.stage0_router")
+    qwen_model_path = resolve(config, "models.qwen_embedding")
+    os.environ["QWEN_MODEL_PATH"] = qwen_model_path
     device = pick_device("auto")
     print(f"Loading Qwen + Router models (once for all cases)...")
+    print(f"  Qwen model: {qwen_model_path}")
     tokenizer, embedder, head, head_cfg = load_router(Path(checkpoint), device)
     lung_cache = LungCache()
     totalseg_cache = TotalSegLobeCache(
