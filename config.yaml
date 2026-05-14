@@ -3,7 +3,7 @@
 # ============================================================
 
 # --- Python 环境 ---
-python: "C:/Users/Sunyucheng/anaconda3/envs/pytorch/python.exe"
+python: "python"
 
 # --- 数据（放在 upload/data/ 下面） ---
 data:
