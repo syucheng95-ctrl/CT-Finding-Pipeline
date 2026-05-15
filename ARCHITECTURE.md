@@ -30,7 +30,7 @@
                       Proposal BBox List       ← proposal bbox 列表
                                  │
                     ┌────────────┴────────────┐
-                    │  Stage1 — Verification  │   文本一致性验证
+                    │  Stage1 — VoxTell        │   文本引导粗分割
                     │  ┌───────────────────┐  │
                     │  │  VoxTell          │  │   文本引导分割（1.7 GB）
                     │  │  DoRA Predictor   │  │   滑动窗口推理
@@ -111,9 +111,9 @@ Pipeline 从 FullCT VoxTell 的 0.2244 提升到 S1 hybrid 的 0.2334，证明�
 | MONAI 肺结节检测器 | 深度学习模型（160 MB） |
 | 弥散兜底专家 | 全 ROI 裁剪 |
 
-### Stage1 — VoxTell 文本验证
+### Stage1 — VoxTell 文本引导粗分割
 
-**设计逻辑**：Stage0.5 候选框多但假阳性也高。VoxTell 是文本引导分割模型——它读图像 + 文本，只分割文本描述的那种病灶。如果 candidate bbox 里没有文本说的东西，VoxTell 基本不分或者概率很低。本质是"用文本过滤假阳性"，帮昂贵的 Stage2 省力。
+**设计逻辑**：VoxTell 是文本引导的 3D 分割模型——它读图像 + 文本，输出文本描述对应病灶的 coarse mask。Stage 1 的核心产出是粗分割掩膜，这是最终分割结果的重要组成部分（Gate 多数情况下选择 S1 掩膜）。同时，VoxTell 的概率分数天然具备区分能力——如果 candidate bbox 里没有文本描述的东西，VoxTell 基本不分或者概率很低，因此可以顺带过滤假阳性 candidate，帮昂贵的 Stage2 省力。
 
 | 模型 | 大小 | 功能 |
 |---|---|---|
